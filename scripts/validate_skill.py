@@ -160,6 +160,11 @@ def validate_skill_md(root: Path) -> str:
                    "Paper Set Routing", "Multiple papers do not require multiple full reports"]:
         if needle not in text:
             fail(f"SKILL.md missing Paper Set Routing requirement: {needle}")
+    # Evidence Hardening (v0.5.3)
+    for needle in ["Two-pass Literature Synthesis", "Corpus Inventory",
+                   "Evidence Strength", "Claim Safety", "Ablation Table Integrity"]:
+        if needle not in text:
+            fail(f"SKILL.md missing evidence hardening requirement: {needle}")
     return text
 
 
@@ -187,16 +192,26 @@ def validate_templates(root: Path) -> None:
     mp = read_text(root, "templates/multi-paper-comparison-template.md")
     for needle in ["Strong Argument Construction", "Innovation Framework Recommendation",
                    "Paper Usage Decision", "Single-paper Extension", "Cross-paper Fusion",
-                   "New Framework from Shared Gaps", "Paper Evidence Cards"]:
+                   "New Framework from Shared Gaps", "Paper Evidence Cards",
+                   "Corpus Inventory", "Paper Tiering", "Evidence Maturity",
+                   "Mechanism Compatibility Check", "Quality Audit"]:
         require_contains(mp, needle, "multi-paper-comparison-template.md")
     ib2 = read_text(root, "templates/innovation-brief-template.md")
     require_contains(ib2, "Framework Source Type", "innovation-brief-template.md")
+    require_contains(ib2, "Claim Safety Check", "innovation-brief-template.md")
+    require_contains(ib2, "Evidence Maturity", "innovation-brief-template.md")
+    require_contains(ib2, "Mechanism Compatibility Check", "innovation-brief-template.md")
     sa = read_text(root, "templates/strong-argument-template.md")
     require_contains(sa, "Claim type", "strong-argument-template.md")
     require_contains(sa, "Cross-paper Reasoning", "strong-argument-template.md")
+    require_contains(sa, "Evidence Maturity", "strong-argument-template.md")
+    require_contains(sa, "cross-domain analogy", "strong-argument-template.md")
     pa = read_text(root, "templates/paper-analysis-template.md")
     for needle in ["Evidence Coverage", "Formula", "Figure", "Table", "OCR"]:
         require_contains(pa, needle, "paper-analysis-template.md")
+    require_contains(pa, "Ablation Table Integrity Check", "paper-analysis-template.md")
+    require_contains(pa, "Claim Safety Check", "paper-analysis-template.md")
+    require_contains(pa, "Quality Audit", "paper-analysis-template.md")
 
 
 def _validate_gbt_sections(gbt: str) -> None:

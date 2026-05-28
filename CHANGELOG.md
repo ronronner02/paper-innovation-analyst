@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.5.3-beta — 2026-05-28
+
+### Added
+
+- **Evidence Strength / Claim Safety rules** for single-paper and innovation reports. Any claim containing trigger words (first, novel, SOTA, fully compatible, ONNX compatible, deployment-ready, real-time, negligible FLOPs, specific VRAM, etc.) must be labeled with an evidence level (1-5) and validated before inclusion.
+- **Two-pass Literature Synthesis** workflow for batch paper analysis: Pass 0 (Corpus Inventory) detects paper-count mismatches before synthesis; Pass 1 (Evidence Card Construction) requires minimum-quality cards for all papers; Pass 2 (Synthesis and Innovation) only proceeds after Pass 0 and 1 are complete.
+- **Corpus Inventory** step to detect paper-count mismatches before synthesis.
+- **Paper Tiering** (A/B/C/Excluded) and minimum evidence card requirements for batch analysis.
+- **Evidence Maturity** table for innovation frameworks: tracks whether each component is direct/inference/hypothesis/speculative.
+- **Mechanism Compatibility Check** for cross-paper innovation frameworks: tensor shape, feature domain, loss, training conflict, compute, memory, deployment, and dataset compatibility.
+- **Three-state Quality Audit**: pass / partial / fail across all templates (replaces checkbox-only self-checks).
+- **Ablation Table Integrity Check** in single-paper analysis template.
+- **Claim Safety Check** in innovation-brief and paper-analysis templates.
+- **Example prompts** for strict evidence mode and no-strong-claims batch analysis.
+
+### Changed
+
+- Batch mode now delays innovation generation until corpus inventory and evidence cards are complete.
+- Strong arguments require multiple Tier A/B evidence cards or must be downgraded to `weak argument`.
+- Engineering and deployment claims must be labeled as assumptions unless measured by the paper.
+- Quality self-checks use pass / partial / fail instead of only checkboxes.
+- Cross-domain papers (e.g., LLM architecture for image restoration) must be labeled as `cross-domain analogy`.
+
+### Fixed
+
+- Reduced risk of unsupported "first", "SOTA", "fully compatible", "real-time", and exact resource-estimate claims.
+- Reduced risk of misleading ablation-table summaries (selected rows without noting omitted rows).
+- Reduced risk of paper-count mismatch in batch mode reports.
+
 ## v0.5.2-beta — 2026-05-28
 
 ### Added

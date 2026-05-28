@@ -125,15 +125,48 @@ One concise paragraph explaining what the user should remember and what to do ne
 
 Use GB/T 7714-2015 formatting. See `references/gbt7714-2015-examples.md`. Do not fabricate missing bibliographic fields.
 
-## 12. Quality Self-Check
+## 12. Ablation Table Integrity Check
 
-Before finalizing, verify:
+For each ablation table summarized in the report:
 
-- [ ] Every factual claim is tagged as `Paper states:` or `Inference:`
-- [ ] No numeric results are invented; missing data marked as `not found in provided material`
-- [ ] Contributions are classified by novelty type (problem / method / data / evaluation / systems / empirical)
-- [ ] Limitations cover at least: dataset, evaluation, ablation, generalization, efficiency, reproducibility
-- [ ] Hardware and deployment evidence is extracted or explicitly flagged as missing
-- [ ] Training-scale and deployment-scale feasibility are assessed separately
-- [ ] References use GB/T 7714-2015 format with no fabricated bibliographic fields
-- [ ] Analysis is technically specific, not generic advice
+- Table name:
+- Full table used or selected rows only:
+- Omitted rows:
+- Could omitted rows change interpretation? (pass / partial / fail)
+- Baseline vs final configuration distinction:
+- Claims supported by this table:
+- Claims not supported by this table:
+
+If only selected rows are shown, add: `Selected rows only; omitted rows may affect interpretation.`
+
+## 13. Claim Safety Check
+
+For any claim containing trigger words (first / novel / SOTA / fully compatible / ONNX compatible / deployment-ready / real-time / negligible FLOPs / specific VRAM / low latency / all tasks / all datasets / edge-ready / production-ready):
+
+| Claim | Evidence level | Required validation | Rewrite if unsafe |
+|---|---|---|---|
+|  |  |  |  |
+
+Evidence levels:
+1. `Directly supported by the paper`
+2. `Supported by cited related work`
+3. `Cross-paper inference`
+4. `Engineering hypothesis requiring validation`
+5. `Unsupported; remove or rewrite`
+
+## 14. Quality Audit
+
+| Check | Status: pass / partial / fail | Evidence | Required fix |
+|---|---|---|---|
+| Every factual claim tagged as Paper states / Inference |  |  |  |
+| No numeric results invented |  |  |  |
+| Contributions classified by novelty type |  |  |  |
+| Limitations cover dataset/evaluation/ablation/generalization/efficiency/reproducibility |  |  |  |
+| Hardware and deployment evidence extracted or flagged as missing |  |  |  |
+| Training-scale and deployment-scale feasibility assessed separately |  |  |  |
+| References use GB/T 7714-2015 or missing metadata marked |  |  |  |
+| No unsupported first/SOTA/deployment-ready/real-time claims |  |  |  |
+| Ablation tables preserve critical rows |  |  |  |
+| Engineering claims labeled as assumptions unless measured |  |  |  |
+
+Do NOT default all checks to `pass`. If missing metadata exists, reference check is `partial` at most. If ablation rows were omitted, ablation check is `partial` or `fail`.

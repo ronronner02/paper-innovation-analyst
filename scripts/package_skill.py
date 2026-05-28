@@ -16,7 +16,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-DEFAULT_VERSION = "v0.5.2-beta"
+DEFAULT_VERSION = "v0.5.3-beta"
 
 EXCLUDE_DIRS = {
     ".git",

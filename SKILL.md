@@ -28,11 +28,36 @@ When formulas, framework diagrams, tables, charts, or supplementary files are ce
 
 ## Operating Principles
 
-1. **Separate evidence from inference.** Use `Paper states:` for direct claims, `Inference:` for analysis, `Hypothesis:` for proposed ideas.
+1. **Separate evidence from inference.** Use `Paper states:` for direct claims, `Inference:` for analysis, `Hypothesis:` for proposed ideas. In innovation reports, also distinguish `Engineering hypothesis requiring validation` and `Speculative research idea`.
 2. **Do not fabricate.** Mark missing data as `not found in provided material`. Never invent results. See `references/gbt7714-2015-examples.md` for citation formatting.
 3. **Be concrete.** Every idea must name the affected module, expected tensor/data-flow change, target dataset, and measurable effect. Generic advice is rejected.
 4. **Enforce quality gates.** Every innovation idea must pass the gates defined in `references/idea-quality-gates.md`.
 5. **Match depth to goal.** Quick reading gets summaries; project ideation gets limitations and experiments; thesis writing gets novelty positioning.
+6. **Evidence Strength and Claim Safety.** Any claim containing the following words or meanings MUST be labeled with an evidence level:
+
+   **Trigger words:** first / 首个, novel / 全新, SOTA / state-of-the-art, fully compatible / 完全兼容, ONNX compatible, TensorRT compatible, deployment-ready, real-time, negligible FLOPs, 8GB GPU / 16GB GPU / specific VRAM, low latency, all tasks / all papers / all datasets, safe for edge deployment, production-ready.
+
+   **Evidence levels:**
+   1. `Directly supported by the paper` — the paper provides explicit experimental evidence for this claim.
+   2. `Supported by cited related work` — a cited paper provides evidence; the current paper does not directly test it.
+   3. `Cross-paper inference` — inferred by combining findings from multiple papers; not directly tested.
+   4. `Engineering hypothesis requiring validation` — plausible engineering estimate without experimental confirmation.
+   5. `Unsupported; remove or rewrite` — no evidence found; the claim must be removed or rewritten.
+
+   **Enforcement rules:**
+   - If the paper has no ONNX/TensorRT export test, do NOT write "ONNX/TensorRT compatible"; write "requires export validation".
+   - If the paper has no edge-device test (Jetson/RK3588/mobile), do NOT write "edge-ready" or "real-time edge deployment"; write "edge deployment requires profiling".
+   - If the paper has no VRAM report, do NOT write "8GB GPU is enough"; write "resource requirement must be profiled".
+   - Without systematic literature search, do NOT write "first / 首个"; write "potentially novel direction (literature search required)".
+   - Estimates in innovation proposals MUST be labeled `Engineering hypothesis requiring validation`.
+   - Single-paper innovation reports MUST distinguish: paper fact, inference, engineering hypothesis, speculative research idea.
+
+7. **Ablation Table Integrity.** When summarizing ablation, comparison, or benchmark tables:
+   - Do NOT omit rows that would change the experimental interpretation.
+   - If only selected rows are shown, mark: `Selected rows only; omitted rows may affect interpretation.`
+   - Distinguish "Final full configuration" from single-module ablation results.
+   - Do NOT derive cross-task conclusions from single-task ablations unless cross-task evidence exists.
+   - If a table has baseline, final configuration, and intermediate variants, clearly label which is which.
 
 ## Required Workflow
 
@@ -70,9 +95,58 @@ Produce: minimal viable experiment, full plan, ablation matrix, dataset protocol
 
 ### Phase 7: Paper Set Routing and Synthesis
 
-When the user provides exactly one paper, default to single-paper analysis (Phases 2-6). When the user provides multiple papers, do NOT default to generating one full report per paper. Instead, default to literature synthesis and innovation.
+When the user provides exactly one paper, default to single-paper analysis (Phases 2-6). When the user provides multiple papers, do NOT default to generating one full report per paper. Instead, default to literature synthesis and innovation using the **Two-pass Literature Synthesis** workflow.
 
-For multiple papers, use the following hierarchy:
+#### Two-pass Literature Synthesis
+
+**Pass 0: Corpus Inventory.** Before any synthesis, clustering, or innovation, perform a corpus inventory:
+
+```markdown
+## Corpus Inventory
+
+- Claimed paper count:
+- Detected PDF/document count:
+- Successfully parsed:
+- Failed/unreadable:
+- Duplicates:
+- Out-of-domain papers:
+- Missing files suspected:
+- Proceed / stop decision:
+```
+
+Rules:
+- If the user claims N papers but the detected count differs, report the mismatch.
+- If the mismatch is significant, ask whether to continue, or write: `Proceeding with detected papers only. Claimed count mismatch remains unresolved.`
+- Report titles must not claim unverified paper counts.
+
+**Pass 1: Evidence Card Construction.** Each paper gets a minimum-quality evidence card (not just a one-line summary):
+
+```markdown
+| Field | Content |
+|---|---|
+| Paper ID | |
+| Title | |
+| Domain fit | core / relevant / background / out-of-domain |
+| Extraction confidence | high / medium / low |
+| Method evidence | |
+| Formula / architecture evidence | |
+| Experiment evidence | |
+| Limitation evidence | |
+| Useful mechanism | |
+| Role in synthesis | core evidence / mechanism source / contrastive evidence / background / excluded |
+| Reason for use or exclusion | |
+```
+
+If a paper was only read at title/abstract level, mark: `Evidence insufficient for mechanism-level synthesis.` Do NOT use insufficiently parsed papers for strong arguments or core innovation support.
+
+**Pass 2: Literature Synthesis and Innovation.** Only after completing corpus inventory and evidence cards, proceed to:
+- Paper Tiering (see template)
+- Research clustering and method family map
+- Shared assumptions and common limitations
+- Strong argument construction (requires multiple Tier A/B evidence cards)
+- Innovation framework recommendation with Evidence Maturity and Mechanism Compatibility Check
+
+#### General Multi-paper Rules
 
 1. Build concise evidence cards for each paper (not full reports).
 2. Cluster papers by research problem, method family, dataset, architecture, loss function, evaluation protocol, and deployment target.
@@ -86,8 +160,9 @@ Important rules:
 - A paper set should produce synthesis, not a pile of summaries.
 - The final innovation framework may use all, some, or only one of the provided papers, depending on evidence strength, mechanism compatibility, and relevance. Do not force every paper into the final argument if doing so weakens coherence or novelty.
 - If a paper weakens the final argument, mark it as background, weak relevance, or excluded. Do not force weakly related papers into the innovation framework just to appear comprehensive.
-- The final innovation can come from: single-paper extension; cross-paper fusion; new framework from shared gaps; or a new structure/loss/training strategy/deployment方案 inspired by the literature evidence.
+- The final innovation can come from: single-paper extension; cross-paper fusion; new framework from shared gaps; or a new structure/loss/training strategy/deployment approach inspired by the literature evidence.
 - For each strong argument or innovation, distinguish: directly supported by paper evidence; inferred from cross-paper comparison; proposed as a new hypothesis.
+- Cross-domain papers (e.g., LLM architecture used for image restoration) can only be labeled as `cross-domain analogy` unless there is an explicit mechanism mapping and experiment plan.
 
 Use `templates/multi-paper-comparison-template.md` for literature synthesis.
 

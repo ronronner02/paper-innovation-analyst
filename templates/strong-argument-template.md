@@ -27,6 +27,11 @@ Strength labels:
 - **weak** — suggestive but not conclusive
 - **indirect** — supports the argument indirectly through related findings
 
+Rules:
+- At least 2 Tier A/B papers required for a strong argument. If < 2, label as `weak argument`.
+- If cross-domain analogy is used, label: `cross-domain analogy, not direct evidence`.
+- Arguments must NOT be supported only by titles or abstracts.
+
 ## 3. Cross-paper Reasoning
 
 - What paper A shows:
@@ -77,6 +82,21 @@ Output a paragraph that could be placed in a paper's introduction, related work,
 [可放入论文引言 / 相关工作 / 研究动机的段落草稿]
 ```
 
-## 8. References
+## 8. Evidence Maturity
+
+| Evidence source | Paper | Maturity |
+|---|---|---|
+|  |  | directly supported / cross-paper inference / hypothesis / speculative |
+
+## 9. Quality Audit
+
+| Check | Status: pass / partial / fail | Evidence |
+|---|---|---|
+| At least 2 Tier A/B papers support this argument |  |  |
+| No unsupported first/SOTA/deployment-ready claims |  |  |
+| Cross-domain analogy labeled correctly |  |  |
+| Evidence cards exist for all cited papers |  |  |
+
+## 10. References
 
 Use GB/T 7714-2015 formatting. See `references/gbt7714-2015-examples.md`. Do not fabricate missing bibliographic metadata.
