@@ -74,3 +74,15 @@ Use these papers as a corpus. You may use all papers or select only the most rel
 ```text
 Based on this literature set, recommend 2–3 research frameworks. Each framework can be a single-paper extension, a cross-paper fusion, or a new framework derived from shared unresolved gaps.
 ```
+
+## Batch Literature Synthesis Strict Mode
+
+```text
+Analyze this paper batch in strict evidence mode. First perform corpus inventory. Do not generate innovation frameworks until each used paper has an evidence card with extraction confidence, method evidence, experiment evidence, limitation evidence, and role in synthesis.
+```
+
+## Batch Innovation Without Strong Claims
+
+```text
+Generate innovation frameworks from this literature set, but label all cross-paper fusions as direct evidence, inference, engineering hypothesis, or speculative idea. Do not use "first", "SOTA", "fully compatible", "real-time", or exact GPU/VRAM estimates unless directly supported.
+```

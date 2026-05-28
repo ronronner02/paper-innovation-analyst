@@ -110,10 +110,71 @@ If any appear without detail, rewrite to specify: which layer/pipeline stage, te
 - Risk: 1-5
 - Difficulty: low / medium / high
 - Best-fit output: course project / internship project / thesis direction / workshop paper / conference paper
+- Evidence level:
+- Unsupported strong claims removed or rewritten:
+- Engineering assumptions:
+- Required validation before claiming deployment readiness:
 
 Repeat for 3-7 ideas.
 
-## 6. Recommended Priority
+## 6. Evidence Maturity
+
+For each innovation idea, assess evidence maturity:
+
+| Component | Source paper | Evidence type | Maturity |
+|---|---|---|---|
+| Problem motivation | | direct / inference / hypothesis | |
+| Core mechanism | | direct / inference / hypothesis | |
+| Fusion/extension design | | hypothesis / speculative | |
+| Deployment claim | | measured / assumed / unknown | |
+| Resource estimate | | measured / assumption / unknown | |
+
+Rules:
+- Cross-paper fusion must NOT just say "combine A and B"; must explain how mechanisms connect at tensor/feature/loss level.
+- All deployment-related judgments must be labeled `measured` or `requires validation`.
+- All exact resource estimates must be labeled `assumption` unless backed by profiling or paper evidence.
+
+## 7. Mechanism Compatibility Check
+
+For cross-paper fusion or multi-source innovation:
+
+- Tensor shape compatibility:
+- Feature domain compatibility:
+- Loss/objective compatibility:
+- Training conflict risk:
+- Compute/FLOPs risk:
+- Memory/VRAM risk:
+- Deployment/operator risk:
+- Dataset/protocol compatibility:
+- Minimal integration test:
+
+## 8. Claim Safety Check
+
+| Claim | Evidence level | Required validation | Rewrite if unsafe |
+|---|---|---|---|
+|  |  |  |  |
+
+Evidence levels:
+1. `Directly supported by the paper`
+2. `Supported by cited related work`
+3. `Cross-paper inference`
+4. `Engineering hypothesis requiring validation`
+5. `Unsupported; remove or rewrite`
+
+## 9. Quality Audit
+
+| Check | Status: pass / partial / fail | Evidence | Required fix |
+|---|---|---|---|
+| Each idea passes Innovation Quality Gate (4/6 conditions) |  |  |  |
+| No unsupported first/SOTA/deployment-ready/real-time claims |  |  |  |
+| Engineering claims labeled as assumptions unless measured |  |  |  |
+| Cross-paper fusion includes mechanism compatibility check |  |  |  |
+| Deployment claims include export validation or are flagged |  |  |  |
+| References use GB/T 7714-2015 or missing metadata marked |  |  |  |
+
+Do NOT default all checks to `pass`.
+
+## 10. Recommended Priority
 
 Rank the ideas by expected value for the user's goal.
 
@@ -121,6 +182,6 @@ Rank the ideas by expected value for the user's goal.
 |---:|---|---|---|---|
 | 1 |  |  |  |  |
 
-## 7. References
+## 11. References
 
 Use GB/T 7714-2015 formatting. See `references/gbt7714-2015-examples.md`. Do not fabricate missing bibliographic fields.

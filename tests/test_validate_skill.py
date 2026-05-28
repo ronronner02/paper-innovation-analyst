@@ -229,7 +229,7 @@ class TestREADME:
 
     def test_has_version_info(self) -> None:
         text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-        assert "v0.5.2-beta" in text
+        assert "v0.5.3-beta" in text
 
     def test_has_capability_boundary(self) -> None:
         text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")

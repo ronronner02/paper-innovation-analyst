@@ -2,7 +2,7 @@
 
 A Claude Skill for evidence-aware academic paper analysis: technical decomposition, novelty and limitation assessment, formula/figure/table-aware reading, implementable innovation points, experiment plans, and multi-paper synthesis.
 
-**Status:** beta | **Version:** v0.5.2-beta | **License:** MIT
+**Status:** beta | **Version:** v0.5.3-beta | **License:** MIT
 
 ## Project Status
 
@@ -44,6 +44,14 @@ This Skill helps Claude perform a repeatable research-reading workflow:
 5. Generate implementable innovation points with experiments, baselines, metrics, risks, and feasibility scores.
 6. Compare multiple papers and synthesize cross-paper research directions.
 7. When evidence is available, analyze formulas, framework diagrams, charts, tables, references, multi-column layout, OCR text, and supplementary material with uncertainty labels.
+
+## Batch Literature Synthesis Caveat
+
+Batch mode is designed for synthesis, not for deep full-paper analysis of every paper.
+
+For large corpora, the Skill first builds an inventory and evidence cards. Innovation frameworks should only use papers with sufficient evidence. Weakly related or insufficiently parsed papers may be marked as background or excluded.
+
+Batch-mode outputs are research planning drafts and require human verification before use in proposals, theses, or publications.
 
 ## Single Paper vs Literature Set Behavior
 
@@ -131,8 +139,8 @@ Use the packaging script for a clean release archive:
 
 ```bash
 python scripts/package_skill.py .
-# Output: dist/paper-innovation-analyst-v0.5.2-beta.skill
-# Output: dist/paper-innovation-analyst-v0.5.2-beta.zip
+# Output: dist/paper-innovation-analyst-v0.5.3-beta.skill
+# Output: dist/paper-innovation-analyst-v0.5.3-beta.zip
 ```
 
 Upload the `.skill` file through Claude's Skills settings if your Claude plan supports custom Skills.
