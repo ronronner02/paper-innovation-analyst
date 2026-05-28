@@ -1,0 +1,52 @@
+name: Validate Skill
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: pip install pytest
+
+      - name: Compile scripts
+        run: python -m py_compile scripts/validate_skill.py scripts/extract_paper_assets.py scripts/package_skill.py
+
+      - name: Validate Skill package
+        run: python scripts/validate_skill.py .
+
+      - name: Run tests
+        run: python -m pytest tests -q
+
+      - name: Build release packages
+        run: python scripts/package_skill.py .
+
+      - name: Unpack and release-check
+        run: |
+          mkdir -p /tmp/skill-release-check
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          import glob
+          dist = Path("dist")
+          zips = sorted(dist.glob("*.zip"))
+          if not zips:
+              print("No .zip found in dist/")
+              raise SystemExit(1)
+          archive = zips[-1]
+          target = Path("/tmp/skill-release-check")
+          with zipfile.ZipFile(archive, "r") as zf:
+              zf.extractall(target)
+          print(f"Unpacked {archive} to {target}")
+          PY
+          python scripts/validate_skill.py /tmp/skill-release-check/paper-innovation-analyst --release

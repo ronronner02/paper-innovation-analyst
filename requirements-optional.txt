@@ -1,0 +1,8 @@
+# Optional dependencies for scripts/extract_paper_assets.py
+# The Skill remains usable without these packages; the script degrades gracefully.
+# Pin upper bounds if compatibility issues arise with future versions.
+pymupdf>=1.23,<2.0
+pdfplumber>=0.10,<1.0
+pillow>=10.0,<12.0
+pytesseract>=0.3,<1.0
+# System package required for OCR when using pytesseract: tesseract-ocr
