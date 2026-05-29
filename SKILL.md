@@ -35,7 +35,9 @@ When formulas, framework diagrams, tables, charts, or supplementary files are ce
 5. **Match depth to goal.** Quick reading gets summaries; project ideation gets limitations and experiments; thesis writing gets novelty positioning.
 6. **Evidence Strength and Claim Safety.** Any claim containing the following words or meanings MUST be labeled with an evidence level:
 
-   **Trigger words:** first / 首个, novel / 全新, SOTA / state-of-the-art, fully compatible / 完全兼容, ONNX compatible, TensorRT compatible, deployment-ready, real-time, negligible FLOPs, 8GB GPU / 16GB GPU / specific VRAM, low latency, all tasks / all papers / all datasets, safe for edge deployment, production-ready.
+   **Trigger words (English):** first, novel, SOTA, state-of-the-art, fully compatible, ONNX compatible, TensorRT compatible, deployment-ready, real-time, negligible FLOPs, zero overhead, 8GB GPU, 16GB GPU, specific VRAM, low latency, all tasks, all datasets, safe for edge deployment, production-ready, 4K <200ms, INT8 1.5-2x, VRAM 2-4GB.
+
+   **Trigger words (Chinese):** 首个, 首次, 第一个, 首次提出, 全新, 完全兼容, 实时, 零开销, 可忽略, 单卡8GB, 8GB显存, 4K <200ms, VRAM 2-4GB, ONNX兼容性好, 部署完全兼容, 单GPU 8GB+.
 
    **Evidence levels:**
    1. `Directly supported by the paper` — the paper provides explicit experimental evidence for this claim.
@@ -45,10 +47,13 @@ When formulas, framework diagrams, tables, charts, or supplementary files are ce
    5. `Unsupported; remove or rewrite` — no evidence found; the claim must be removed or rewritten.
 
    **Enforcement rules:**
-   - If the paper has no ONNX/TensorRT export test, do NOT write "ONNX/TensorRT compatible"; write "requires export validation".
-   - If the paper has no edge-device test (Jetson/RK3588/mobile), do NOT write "edge-ready" or "real-time edge deployment"; write "edge deployment requires profiling".
-   - If the paper has no VRAM report, do NOT write "8GB GPU is enough"; write "resource requirement must be profiled".
-   - Without systematic literature search, do NOT write "first / 首个"; write "potentially novel direction (literature search required)".
+   - If the paper has no ONNX/TensorRT export test, do NOT write "ONNX/TensorRT compatible" or "ONNX兼容性好"; write "requires export validation".
+   - If the paper has no edge-device test (Jetson/RK3588/mobile), do NOT write "edge-ready" or "real-time edge deployment" or "部署完全兼容"; write "edge deployment requires profiling".
+   - If the paper has no VRAM report, do NOT write "8GB GPU is enough" or "单卡8GB" or "VRAM 2-4GB"; write "resource requirement must be profiled".
+   - Without systematic literature search, do NOT write "first / 首个 / 首次 / 第一个"; write "potentially underexplored; requires literature search". The phrases "first / 首个 / 首次 / 第一个" are BANNED even when labeled speculative or as a hypothesis.
+   - Without actual profiling data, do NOT write specific VRAM numbers, latency numbers (e.g., "4K <200ms"), FPS numbers, or INT8 speedup ratios as facts. All such values MUST be labeled `Engineering hypothesis requiring validation`.
+   - All engineering deployment estimates MUST be labeled `Engineering hypothesis requiring validation`.
+   - All "expected improvement" or "expected contribution" statements MUST be rewritten as `Hypothesized measurable outcome` or `Target measurable outcome to test`.
    - Estimates in innovation proposals MUST be labeled `Engineering hypothesis requiring validation`.
    - Single-paper innovation reports MUST distinguish: paper fact, inference, engineering hypothesis, speculative research idea.
 
@@ -58,6 +63,40 @@ When formulas, framework diagrams, tables, charts, or supplementary files are ce
    - Distinguish "Final full configuration" from single-module ablation results.
    - Do NOT derive cross-task conclusions from single-task ablations unless cross-task evidence exists.
    - If a table has baseline, final configuration, and intermediate variants, clearly label which is which.
+   - If an ablation table changes only one variable, explicitly state what is fixed (e.g., "fixed: backbone, neck, loss; changed: head kernel size").
+   - Do NOT write final full configuration as if it were a single-module result (e.g., do NOT write "HP (4阶,最终)" when the table shows HP alternative configurations vs final full configuration).
+   - For kernel-size ablation tables (e.g., Table XXX), specify: one branch fixed at 3×3, the other branch varied. Do NOT write "3×3 is the default small kernel" without context.
+   - Delta values MUST be recalculated from the original table numbers, not hand-written from memory.
+
+8. **Bibliographic Verification Gate.** Every cited paper MUST verify the following fields against the provided material:
+
+   | Field | Verification method |
+   |---|---|
+   | Title | Match against PDF header or reference list |
+   | Authors | Match against PDF header |
+   | Year | Match against copyright year, conference date, or DOI |
+   | Venue | Match against header, DOI, or reference list |
+   | DOI | Verify format (10.xxxx/...) and match if available |
+
+   - **DOI extraction is mandatory.** Before writing "DOI not found", scan the PDF first-page header/footer for `doi.org/`, `DOI:`, `https://doi.org/`, or `10.xxxx/` patterns. If the DOI is visible in the PDF, extract it and mark as `verified`.
+   - If ANY field cannot be verified, mark as `unverified — not found in provided material`.
+   - Do NOT guess year, venue, or DOI from memory or training data.
+   - Example: if the PDF header says Pattern Recognition 178 (2026) 113448, write exactly that; do NOT write "2025" or "arXiv".
+
+9. **Table Identity Gate.** Every experimental table summarized in the report MUST specify:
+   - **Table ID** — as printed in the paper (e.g., Table 9)
+   - **Noise setting** — experimental condition (e.g., cross-framework noise / box noise / mixed noise / clean)
+   - **Metric** — read from the table caption. If the caption says "We report mAP", the metric is `mAP` — do NOT relabel as `AP@0.5` unless the caption explicitly states that.
+   - **Dataset** — which dataset (e.g., COCO val, SIDD)
+   - Do NOT re-label or merge table results. If a table reports "cross-framework box noise" results, write exactly that — do NOT write "mixed noise".
+   - Do NOT infer metric from other tables or from convention. Each table's metric comes from its own caption.
+
+10. **SOTA Claim Classification.** Any SOTA-type claim MUST be classified as one of:
+    - `paper-claimed SOTA` — the paper itself claims state-of-the-art
+    - `supported within evaluated baselines` — outperforms the baselines tested in the paper, but no SOTA claim made
+    - `externally verified SOTA` — confirmed by independent external literature search
+    - Without an actual external literature search, do NOT write `externally verified SOTA`.
+    - If the paper explicitly states "achieving state-of-the-art results" or equivalent, classify as `paper-claimed SOTA; supported within evaluated baselines; not externally verified.` Do NOT write "the paper did not claim SOTA" when the paper clearly does.
 
 ## Required Workflow
 

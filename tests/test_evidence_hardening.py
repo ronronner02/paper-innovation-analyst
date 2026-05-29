@@ -1,4 +1,4 @@
-"""Tests for v0.5.3-beta evidence hardening features."""
+"""Tests for v0.5.3-beta through v0.5.5-beta evidence hardening features."""
 
 from __future__ import annotations
 
@@ -36,6 +36,12 @@ class TestSkillMdEvidenceHardening:
         for word in ["first", "SOTA", "ONNX compatible", "deployment-ready",
                       "negligible FLOPs", "Engineering hypothesis requiring validation"]:
             assert word in text, f"SKILL.md missing trigger word: {word}"
+
+    def test_claim_safety_chinese_trigger_words(self):
+        text = read("SKILL.md")
+        for word in ["首个", "首次", "第一个", "完全兼容", "实时", "零开销",
+                      "ONNX兼容性好", "部署完全兼容", "单GPU 8GB+", "VRAM 2-4GB", "4K <200ms"]:
+            assert word in text, f"SKILL.md missing Chinese trigger word: {word}"
 
     def test_ablation_table_integrity(self):
         text = read("SKILL.md")
@@ -183,10 +189,14 @@ class TestNoUnsupportedClaims:
 # ---------------------------------------------------------------------------
 
 class TestValidatorPasses:
-    def test_validate_skill_script_runs(self):
+    def test_validate_skill_script_runs(self, tmp_path):
+        import shutil
         import subprocess
+        import sys
+        dst = tmp_path / "paper-innovation-analyst"
+        shutil.copytree(REPO_ROOT, dst, ignore=shutil.ignore_patterns(".git", ".pytest_cache", "__pycache__", "dist", "outputs", ".claude"))
         result = subprocess.run(
-            ["python", "scripts/validate_skill.py", "."],
-            capture_output=True, text=True, cwd=str(REPO_ROOT),
+            [sys.executable, str(dst / "scripts" / "validate_skill.py"), str(dst)],
+            capture_output=True, text=True,
         )
         assert result.returncode == 0, f"Validator failed: {result.stderr}"

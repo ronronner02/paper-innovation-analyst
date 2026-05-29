@@ -57,8 +57,8 @@ Rules:
 
 Each paper gets a minimum-quality evidence card, NOT a full report. If a paper was only read at title/abstract level, mark: `Evidence insufficient for mechanism-level synthesis.`
 
-| Paper ID | Title | Domain fit | Extraction confidence | Method evidence | Formula/architecture evidence | Experiment evidence | Limitation evidence | Useful mechanism | Role in synthesis | Reason for use or exclusion |
-|---|---|---|---|---|---|---|---|---|---|---|
+| Paper ID | Title | Domain fit | Extraction confidence | Bibliographic verified | Method evidence | Formula/architecture evidence | Experiment evidence | Limitation evidence | Useful mechanism | Role in synthesis | Reason for use or exclusion |
+|---|---|---|---|---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |  |  |  |
 
 Domain fit: core / relevant / background / out-of-domain
@@ -229,16 +229,30 @@ Use GB/T 7714-2015 formatting. See `references/gbt7714-2015-examples.md`. Do not
 
 ## 11. Quality Audit
 
+### Report Quality
+
 | Check | Status: pass / partial / fail | Evidence | Required fix |
 |---|---|---|---|
 | Corpus count matches detected files |  |  |  |
 | Each used paper has sufficient evidence card |  |  |  |
+| Bibliographic fields verified for all cited papers |  |  |  |
 | Strong arguments supported by multiple Tier A/B evidence cards |  |  |  |
 | Innovation frameworks include mechanism compatibility check |  |  |  |
+| SOTA claims classified (paper-claimed / supported within baselines / externally verified) |  |  |  |
+| "first / 首个" not present even as speculative |  |  |  |
 | Engineering claims labeled as assumptions unless measured |  |  |  |
 | No unsupported first/SOTA/deployment-ready/real-time claims |  |  |  |
 | References follow GB/T 7714-2015 or missing metadata marked |  |  |  |
 | Paper tiering completed before synthesis |  |  |  |
 | Cross-domain papers labeled as analogy, not direct evidence |  |  |  |
+| No Chinese banned words (首个/首次/第一个/完全兼容/实时/零开销/ONNX兼容性好/单GPU 8GB+/VRAM 2-4GB/4K <200ms) |  |  |  |
+
+### Paper Evidence Quality
+
+| Check | Status: pass / partial / fail | Evidence |
+|---|---|---|
+| Tier A papers provide hardware/latency evidence |  |  |
+| Tier A papers provide ablation of core components |  |  |
+| Tier A papers provide export/runtime validation |  |  |
 
 Do NOT default all checks to `pass`. If missing metadata exists, reference check is `partial` at most. If corpus count mismatch, corpus check is `fail` or `partial`.

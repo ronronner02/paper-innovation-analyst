@@ -2,7 +2,7 @@
 
 A Claude Skill for evidence-aware academic paper analysis: technical decomposition, novelty and limitation assessment, formula/figure/table-aware reading, implementable innovation points, experiment plans, and multi-paper synthesis.
 
-**Status:** beta | **Version:** v0.5.3-beta | **License:** MIT
+**Status:** beta | **Version:** v0.5.5-beta | **License:** MIT
 
 ## Project Status
 
@@ -53,6 +53,35 @@ For large corpora, the Skill first builds an inventory and evidence cards. Innov
 
 Batch-mode outputs are research planning drafts and require human verification before use in proposals, theses, or publications.
 
+## Claude Skill vs Codex Adapter
+
+### Claude Skill
+
+- Entry point: `SKILL.md`
+- Best for: deep single-paper analysis, literature synthesis, innovation mining, experiment design
+- Output: more complete, more detailed, with full formula/table/figure expansion
+- Must enforce: Evidence Safety, Claim Safety (including Chinese trigger words), Table Integrity, Quality Audit
+
+### Codex Adapter
+
+- Entry point: root `AGENTS.md` and `codex/AGENTS.md`
+- Best for: repository-level maintenance, report review, template improvement, testing, PR workflows
+- Can also generate reports, but must not over-compress
+- Codex reports use `codex/prompts/` and `codex/checklists/`
+- **Codex Adapter is a repository-level adapter, not a replacement for the Claude .skill package.**
+
+### Shared Core Rules
+
+Both platforms share:
+- Evidence Strength and Claim Safety (including Chinese trigger words)
+- Table Identity Gate
+- Ablation Table Integrity
+- Bibliographic Verification Gate
+- SOTA Claim Classification
+- Quality Audit (three-state: pass / partial / fail)
+- GB/T 7714-2015 citation formatting
+- Deployment Hypothesis labeling
+
 ## Single Paper vs Literature Set Behavior
 
 **Single paper input:**
@@ -80,6 +109,17 @@ paper-innovation-analyst/
 ├── .gitignore
 ├── requirements-optional.txt
 ├── LICENSE
+├── codex/                              # Codex Adapter (optional)
+│   ├── AGENTS.md
+│   ├── prompts/
+│   │   ├── paper-analysis.md
+│   │   ├── innovation-mining.md
+│   │   └── literature-synthesis.md
+│   └── checklists/
+│       ├── bibliographic-verification.md
+│       ├── table-identity.md
+│       ├── sota-claim-safety.md
+│       └── quality-audit.md
 ├── references/
 │   ├── review-rubric.md
 │   ├── domain-addenda.md
@@ -105,7 +145,8 @@ paper-innovation-analyst/
 │   ├── test_validate_skill.py
 │   ├── test_validator_release_mode.py
 │   ├── test_packaging_cleanliness.py
-│   └── test_extract_paper_assets_smoke.py
+│   ├── test_extract_paper_assets_smoke.py
+│   └── test_codex_adapter.py
 └── .github/
     └── workflows/
         └── validate.yml
@@ -139,11 +180,50 @@ Use the packaging script for a clean release archive:
 
 ```bash
 python scripts/package_skill.py .
-# Output: dist/paper-innovation-analyst-v0.5.3-beta.skill
-# Output: dist/paper-innovation-analyst-v0.5.3-beta.zip
+# Output: dist/paper-innovation-analyst-v0.5.4-beta.skill
+# Output: dist/paper-innovation-analyst-v0.5.4-beta.zip
 ```
 
 Upload the `.skill` file through Claude's Skills settings if your Claude plan supports custom Skills.
+
+## Repository-level Codex Adapter Usage
+
+This repository includes an optional **Codex Adapter** (`codex/` directory) for use with OpenAI Codex CLI. The Codex Adapter is NOT a standalone `.skill` installation package — it is a lightweight layer that references the full Claude Skill.
+
+### Structure
+
+```
+codex/
+├── AGENTS.md                  # Short repo-level rules (references SKILL.md)
+├── prompts/
+│   ├── paper-analysis.md      # Single-paper deep analysis rules
+│   ├── innovation-mining.md   # Innovation point generation rules
+│   └── literature-synthesis.md # Multi-paper synthesis rules
+└── checklists/
+    ├── bibliographic-verification.md  # Title/Authors/Year/Venue/DOI gate
+    ├── table-identity.md              # Table ID/noise/metric/dataset gate
+    ├── sota-claim-safety.md           # SOTA tripartite classification
+    └── quality-audit.md               # Report vs paper evidence distinction
+```
+
+### How it works
+
+- Codex CLI reads `codex/AGENTS.md` as project instructions
+- `AGENTS.md` references `SKILL.md` for the full 8-phase workflow
+- `codex/prompts/` contains task-specific detailed rules
+- `codex/checklists/` contains verification gates
+
+### Usage
+
+```bash
+# Option A: Copy codex/ into your project alongside SKILL.md
+cp -r codex/ /path/to/your/project/
+
+# Option B: Use this repository directly with Codex CLI
+codex
+```
+
+The Codex Adapter and Claude Skill coexist in the same repository. The Claude Skill (`SKILL.md`) is the primary instruction source; the Codex Adapter (`codex/`) provides Codex-specific entry points and verification checklists.
 
 ## Citation format
 

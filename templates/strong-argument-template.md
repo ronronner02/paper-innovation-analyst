@@ -88,15 +88,36 @@ Output a paragraph that could be placed in a paper's introduction, related work,
 |---|---|---|
 |  |  | directly supported / cross-paper inference / hypothesis / speculative |
 
-## 9. Quality Audit
+## 9. SOTA Classification
+
+If this argument makes SOTA-type claims, classify:
+
+- `paper-claimed SOTA` — the paper itself claims SOTA
+- `supported within evaluated baselines` — outperforms tested baselines only
+- `externally verified SOTA` — confirmed by independent external search
+
+## 10. Quality Audit
+
+### Report Quality
 
 | Check | Status: pass / partial / fail | Evidence |
 |---|---|---|
 | At least 2 Tier A/B papers support this argument |  |  |
+| Bibliographic fields verified for all cited papers |  |  |
 | No unsupported first/SOTA/deployment-ready claims |  |  |
+| SOTA claims classified (paper-claimed / supported within baselines / externally verified) |  |  |
+| "first / 首个" not present even as speculative |  |  |
 | Cross-domain analogy labeled correctly |  |  |
 | Evidence cards exist for all cited papers |  |  |
+| No Chinese banned words (首个/首次/第一个/完全兼容/实时/零开销/ONNX兼容性好/单GPU 8GB+/VRAM 2-4GB/4K <200ms) |  |  |
 
-## 10. References
+### Paper Evidence Quality
+
+| Check | Status: pass / partial / fail | Evidence |
+|---|---|---|
+| Supporting papers provide hardware/latency evidence |  |  |
+| Supporting papers provide ablation of core components |  |  |
+
+## 11. References
 
 Use GB/T 7714-2015 formatting. See `references/gbt7714-2015-examples.md`. Do not fabricate missing bibliographic metadata.

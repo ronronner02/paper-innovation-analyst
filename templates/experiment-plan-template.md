@@ -178,6 +178,20 @@ For every failure, provide a direct debugging action and a scoped fallback.
 - Result table format:
 - Failure log location:
 
-## 13. References
+## 13. Claim Safety Check
+
+For any claim in this experiment plan containing trigger words (first / 首个 / 首次 / novel / SOTA / ONNX compatible / real-time / 部署完全兼容 / specific VRAM / 4K <200ms):
+
+| Claim | Evidence level | Required validation | Rewrite if unsafe |
+|---|---|---|---|
+|  |  |  |  |
+
+Rules:
+- "first / 首个 / 首次" without literature search → `potentially underexplored; requires literature search`
+- "ONNX/TensorRT compatible" without export test → `requires export validation`
+- Specific VRAM/latency/FPS → `Engineering hypothesis requiring validation`
+- All deployment estimates → `Engineering hypothesis requiring validation`
+
+## 14. References
 
 Use GB/T 7714-2015 formatting. See `references/gbt7714-2015-examples.md`. Do not fabricate missing bibliographic fields.

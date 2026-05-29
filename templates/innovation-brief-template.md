@@ -104,16 +104,28 @@ If any appear without detail, rewrite to specify: which layer/pipeline stage, te
 - Full experiment:
 - Baselines:
 - Metrics:
-- Expected contribution:
+- Target measurable outcome (hypothesis unless measured):
 - Feasibility: 1-5
 - Novelty: 1-5
 - Risk: 1-5
 - Difficulty: low / medium / high
 - Best-fit output: course project / internship project / thesis direction / workshop paper / conference paper
 - Evidence level:
+- SOTA classification (select one):
+  - paper-claimed SOTA — the paper itself claims SOTA
+  - supported within evaluated baselines — outperforms tested baselines only
+  - externally verified SOTA — confirmed by independent external search
+  - not applicable — no SOTA-type claim made
 - Unsupported strong claims removed or rewritten:
 - Engineering assumptions:
 - Required validation before claiming deployment readiness:
+- Claim Safety Check (must pass before presentation):
+  - No "first / 首个 / 首次 / 第一个" without literature search
+  - No "ONNX/TensorRT compatible / ONNX兼容性好" without export test
+  - No "real-time / 部署完全兼容 / edge-ready" without edge-device test
+  - No specific VRAM/latency/FPS numbers without profiling
+  - All engineering estimates labeled as `Engineering hypothesis requiring validation`
+  - All "expected improvement / 预期提升" rewritten as `Hypothesized measurable outcome`
 
 Repeat for 3-7 ideas.
 
@@ -163,16 +175,31 @@ Evidence levels:
 
 ## 9. Quality Audit
 
+### Report Quality
+
 | Check | Status: pass / partial / fail | Evidence | Required fix |
 |---|---|---|---|
 | Each idea passes Innovation Quality Gate (4/6 conditions) |  |  |  |
 | No unsupported first/SOTA/deployment-ready/real-time claims |  |  |  |
+| SOTA claims classified (paper-claimed / supported within baselines / externally verified) |  |  |  |
+| "first / 首个" not present even as speculative |  |  |  |
 | Engineering claims labeled as assumptions unless measured |  |  |  |
 | Cross-paper fusion includes mechanism compatibility check |  |  |  |
 | Deployment claims include export validation or are flagged |  |  |  |
 | References use GB/T 7714-2015 or missing metadata marked |  |  |  |
+| No Chinese banned words (首个/首次/第一个/完全兼容/实时/零开销/ONNX兼容性好/单GPU 8GB+/VRAM 2-4GB/4K <200ms) |  |  |  |
+| Each innovation includes: Evidence level, Required validation, Mechanism compatibility, Deployment risk, Minimal viable experiment, Failure criteria |  |  |  |
 
-Do NOT default all checks to `pass`.
+### Paper Evidence Quality
+
+| Check | Status: pass / partial / fail | Evidence |
+|---|---|---|
+| Paper provides hardware details (GPU, VRAM, training time) |  |  |
+| Paper provides inference latency/FPS on target device |  |  |
+| Paper provides export/runtime validation (ONNX/TensorRT) |  |  |
+| Paper provides ablation of each core component |  |  |
+
+Do NOT default all checks to `pass`. A paper with no ONNX test is a paper evidence gap; a report that writes "ONNX compatible" without flagging it is a report quality failure.
 
 ## 10. Recommended Priority
 

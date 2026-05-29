@@ -1,5 +1,63 @@
 # Changelog
 
+## v0.5.5-beta — 2026-05-29
+
+### Added
+
+- **Cross-platform quality alignment** between Claude Skill and Codex Adapter.
+- **Codex report depth requirements** to avoid overly shallow reports. Codex single-paper reports must include 15 minimum sections (Bibliographic Verification through Quality Audit).
+- **Shared Claim Safety, Table Identity, Ablation Integrity, and Quality Audit rules** across both platforms.
+- **Chinese strong-claim trigger detection**: 首个, 首次, 第一个, 首次提出, 全新, 完全兼容, 实时, 零开销, ONNX兼容性好, 部署完全兼容, 单GPU 8GB+, VRAM 2-4GB, 4K <200ms, 8GB显存, 单卡8GB.
+- **Report version consistency checks** in templates and quality audit.
+- **Ablation table integrity enhancements**: fixed/changed variables, final configuration distinction, delta recalculation, kernel-size context rules.
+- **Platform positioning documentation** in README.md and codex/AGENTS.md.
+- **Innovation point depth requirements** for Codex: each idea must include technical route, mechanism compatibility, deployment risk, minimal experiment, failure criteria.
+- **tests/test_cross_platform_alignment.py**: cross-platform alignment tests.
+- **tests/test_report_claim_safety.py**: claim safety tests including Chinese trigger words.
+- **tests/test_codex_depth_profile.py**: Codex report depth profile tests.
+
+### Changed
+
+- Claude reports retain deep analysis but must downgrade unverified deployment and novelty claims.
+- Codex reports must include technical routes, compatibility checks, minimal experiments, and quality audits instead of direction-only summaries.
+- Innovation templates now require evidence level, mechanism compatibility, deployment risk, and validation plan.
+- Experiment plan template now includes Claim Safety Check section.
+- codex/checklists/sota-claim-safety.md now includes Chinese trigger words.
+- codex/checklists/quality-audit.md now includes Chinese banned words and ablation integrity checks.
+- codex/prompts/validate-report-quality.md now scans for Chinese trigger words.
+
+### Fixed
+
+- Reduced unsupported "first/首个/首次", ONNX/TensorRT, real-time, VRAM, and latency claims.
+- Reduced ablation-table context errors such as kernel-size and final-configuration misinterpretation.
+- Release packages now exclude cache, bytecode, old dist, nested zip, and nested skill artifacts.
+- CI now explicitly validates both Claude Skill and Codex Adapter packages.
+
+## v0.5.4-beta — 2026-05-29
+
+### Added
+
+- **Bibliographic Verification Gate** (rule 8): every cited paper must verify Title, Authors, Year, Venue, DOI against provided material. Unverified fields must be marked explicitly.
+- **Table Identity Gate** (rule 9): every experimental table must specify Table ID, noise setting, metric, dataset. Do NOT re-label table results.
+- **SOTA Claim Classification** (rule 10): SOTA claims classified as `paper-claimed SOTA` / `supported within evaluated baselines` / `externally verified SOTA`. Without external search, do NOT write `externally verified SOTA`.
+- **first/首个 banned even as speculative**: rewrite as `potentially underexplored; requires literature search`.
+- **Quality Audit two-distinction**: templates now distinguish "Report Quality" from "Paper Evidence Quality" in all audits.
+- **Codex Adapter** (`codex/` directory): Codex CLI entry points with AGENTS.md, task-specific prompts, and verification checklists.
+- **Root AGENTS.md**: Codex auto-entry point referencing codex/AGENTS.md.
+- **codex/prompts/validate-report-quality.md**: report quality self-check prompt.
+- **codex/README.md**: Codex adapter documentation.
+- **scripts/package_codex_adapter.py**: packaging script for Codex adapter archive.
+- **tests/test_codex_adapter.py**: tests for Codex adapter structure and v0.5.4 gates.
+
+### Changed
+
+- Quality Audit in all templates split into Report Quality and Paper Evidence Quality sections.
+- Evidence cards in multi-paper template now include Bibliographic verified column.
+- Innovation brief template includes SOTA classification field per idea.
+- Strong argument template includes SOTA Classification section.
+- `validate_skill.py` checks v0.5.4 gates and codex adapter structure.
+- CI workflow includes `package_codex_adapter.py` compile and packaging check.
+
 ## v0.5.3-beta — 2026-05-28
 
 ### Added

@@ -20,7 +20,7 @@ jobs:
         run: pip install pytest
 
       - name: Compile scripts
-        run: python -m py_compile scripts/validate_skill.py scripts/extract_paper_assets.py scripts/package_skill.py
+        run: python -m py_compile scripts/validate_skill.py scripts/extract_paper_assets.py scripts/package_skill.py scripts/package_codex_adapter.py
 
       - name: Validate Skill package
         run: python scripts/validate_skill.py .
@@ -31,22 +31,45 @@ jobs:
       - name: Build release packages
         run: python scripts/package_skill.py .
 
-      - name: Unpack and release-check
+      - name: Build Codex adapter package
+        run: python scripts/package_codex_adapter.py .
+
+      - name: Unpack and release-check Claude Skill
         run: |
-          mkdir -p /tmp/skill-release-check
+          mkdir -p /tmp/claude-release-check
           python - <<'PY'
           import zipfile
           from pathlib import Path
-          import glob
           dist = Path("dist")
-          zips = sorted(dist.glob("*.zip"))
+          # Find Claude Skill zip (not codex adapter)
+          zips = [z for z in sorted(dist.glob("*.zip")) if "codex" not in z.name]
           if not zips:
-              print("No .zip found in dist/")
+              print("No Claude Skill .zip found in dist/")
               raise SystemExit(1)
           archive = zips[-1]
-          target = Path("/tmp/skill-release-check")
+          target = Path("/tmp/claude-release-check")
           with zipfile.ZipFile(archive, "r") as zf:
               zf.extractall(target)
           print(f"Unpacked {archive} to {target}")
           PY
-          python scripts/validate_skill.py /tmp/skill-release-check/paper-innovation-analyst --release
+          python scripts/validate_skill.py /tmp/claude-release-check/paper-innovation-analyst --release
+
+      - name: Unpack and release-check Codex Adapter
+        run: |
+          mkdir -p /tmp/codex-release-check
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          dist = Path("dist")
+          # Find Codex Adapter zip
+          zips = [z for z in sorted(dist.glob("*codex*.zip"))]
+          if not zips:
+              print("No Codex Adapter .zip found in dist/")
+              raise SystemExit(1)
+          archive = zips[-1]
+          target = Path("/tmp/codex-release-check")
+          with zipfile.ZipFile(archive, "r") as zf:
+              zf.extractall(target)
+          print(f"Unpacked {archive} to {target}")
+          PY
+          python scripts/validate_skill.py /tmp/codex-release-check/paper-innovation-analyst --release

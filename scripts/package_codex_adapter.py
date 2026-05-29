@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Clean packaging script for the Paper Innovation Analyst Skill.
+"""Packaging script for the Codex Adapter.
 
-Generates versioned .skill and .zip archives suitable for release.
+Generates a .zip archive containing the Codex Adapter (codex/) alongside
+the full Claude Skill (SKILL.md, references/, templates/, scripts/, etc.).
+
+This is NOT a replacement for package_skill.py — it produces a separate
+archive for Codex CLI users.
 
 Usage:
-    python scripts/package_skill.py .
-    python scripts/package_skill.py . --version v0.5.1-beta
-    python scripts/package_skill.py . --dist dist
+    python scripts/package_codex_adapter.py .
+    python scripts/package_codex_adapter.py . --version v0.5.4-beta
 """
 
 from __future__ import annotations
@@ -101,10 +104,10 @@ def build_archive(root: Path, output: Path, arc_root: str) -> tuple[int, list[st
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Package the Paper Innovation Analyst Skill into release archives."
+        description="Package the Codex Adapter alongside the Claude Skill."
     )
-    parser.add_argument("root", nargs="?", default=".", help="Path to skill repository root")
-    parser.add_argument("--version", default=DEFAULT_VERSION, help="Version string for filenames")
+    parser.add_argument("root", nargs="?", default=".", help="Path to repository root")
+    parser.add_argument("--version", default=DEFAULT_VERSION, help="Version string")
     parser.add_argument("--dist", default="dist", help="Output directory")
     args = parser.parse_args()
 
@@ -115,27 +118,32 @@ def main() -> int:
     if not (root / "SKILL.md").exists():
         print("ERROR: SKILL.md not found in root directory", file=sys.stderr)
         return 2
+    if not (root / "codex").is_dir():
+        print("ERROR: codex/ directory not found in root directory", file=sys.stderr)
+        return 2
 
     dist = Path(args.dist).resolve()
     dist.mkdir(parents=True, exist_ok=True)
     arc_root = "paper-innovation-analyst"
-    name_base = f"paper-innovation-analyst-{args.version}"
+    name_base = f"paper-innovation-analyst-codex-adapter-{args.version}"
 
     all_warnings: list[str] = []
 
-    # Build .skill
-    skill_path = dist / f"{name_base}.skill"
-    count_s, warns_s = build_archive(root, skill_path, arc_root)
-    all_warnings.extend(warns_s)
-    size_s = skill_path.stat().st_size / 1024
-    print(f"OK: packaged {count_s} files into {skill_path} ({size_s:.1f} KB)")
-
-    # Build .zip
+    # Build .zip only (not .skill — this is not a Claude Skill package)
     zip_path = dist / f"{name_base}.zip"
     count_z, warns_z = build_archive(root, zip_path, arc_root)
     all_warnings.extend(warns_z)
     size_z = zip_path.stat().st_size / 1024
     print(f"OK: packaged {count_z} files into {zip_path} ({size_z:.1f} KB)")
+
+    # Verify codex/ is in the archive
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        names = zf.namelist()
+        codex_files = [n for n in names if "/codex/" in n]
+        if not codex_files:
+            all_warnings.append("No codex/ files found in archive")
+        else:
+            print(f"OK: {len(codex_files)} codex adapter files in archive")
 
     if all_warnings:
         for w in all_warnings:

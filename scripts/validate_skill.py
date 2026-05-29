@@ -37,6 +37,7 @@ REQUIRED_FILES = [
     "scripts/validate_skill.py",
     "scripts/extract_paper_assets.py",
     "scripts/package_skill.py",
+    "scripts/package_codex_adapter.py",
     "references/document-ingestion-pipeline.md",
     "references/gbt7714-2015-examples.md",
     "references/cv-detection-addendum.md",
@@ -65,6 +66,8 @@ REQUIRED_SKILL_PHRASES = [
     "Novelty score",
     "Risk score",
     "GB/T 7714-2015",
+    "Ablation Table Integrity",
+    "Engineering hypothesis requiring validation",
 ]
 
 # Items that must not appear in a release package
@@ -165,6 +168,25 @@ def validate_skill_md(root: Path) -> str:
                    "Evidence Strength", "Claim Safety", "Ablation Table Integrity"]:
         if needle not in text:
             fail(f"SKILL.md missing evidence hardening requirement: {needle}")
+    # v0.5.4 gates
+    for needle in ["Bibliographic Verification Gate", "Table Identity Gate",
+                   "SOTA Claim Classification", "paper-claimed SOTA",
+                   "supported within evaluated baselines", "externally verified SOTA"]:
+        if needle not in text:
+            fail(f"SKILL.md missing v0.5.4 gate requirement: {needle}")
+    if "first / 首个" in text:
+        # Must ban first/首个 even as speculative
+        if "BANNED even when labeled speculative" not in text:
+            fail("SKILL.md must ban 'first / 首个' even when labeled speculative")
+    # v0.5.5 gates: Chinese trigger words
+    for needle in ["首个", "首次", "第一个", "完全兼容", "实时", "零开销",
+                   "ONNX兼容性好", "部署完全兼容", "单GPU 8GB+", "VRAM 2-4GB", "4K <200ms"]:
+        if needle not in text:
+            fail(f"SKILL.md missing v0.5.5 Chinese trigger word: {needle}")
+    # v0.5.5 gates: Enhanced ablation table integrity
+    for needle in ["Delta values", "final full configuration"]:
+        if needle.lower() not in text.lower():
+            fail(f"SKILL.md missing v0.5.5 ablation integrity requirement: {needle}")
     return text
 
 
@@ -212,6 +234,33 @@ def validate_templates(root: Path) -> None:
     require_contains(pa, "Ablation Table Integrity Check", "paper-analysis-template.md")
     require_contains(pa, "Claim Safety Check", "paper-analysis-template.md")
     require_contains(pa, "Quality Audit", "paper-analysis-template.md")
+    # v0.5.4 gates in templates
+    require_contains(pa, "Bibliographic Verification", "paper-analysis-template.md")
+    require_contains(pa, "Report Quality", "paper-analysis-template.md")
+    require_contains(pa, "Paper Evidence Quality", "paper-analysis-template.md")
+    ib3 = read_text(root, "templates/innovation-brief-template.md")
+    require_contains(ib3, "paper-claimed SOTA", "innovation-brief-template.md")
+    require_contains(ib3, "Report Quality", "innovation-brief-template.md")
+    require_contains(ib3, "Paper Evidence Quality", "innovation-brief-template.md")
+    # v0.5.5: innovation template must require evidence level, validation, compatibility
+    require_contains(ib3, "Evidence level:", "innovation-brief-template.md")
+    require_contains(ib3, "Required validation", "innovation-brief-template.md")
+    require_contains(ib3, "Minimal viable experiment", "innovation-brief-template.md")
+    # v0.5.5: paper analysis template must have enhanced ablation fields
+    pa2 = read_text(root, "templates/paper-analysis-template.md")
+    require_contains(pa2, "Fixed variables", "paper-analysis-template.md")
+    require_contains(pa2, "Changed variable", "paper-analysis-template.md")
+    require_contains(pa2, "Delta values recalculated", "paper-analysis-template.md")
+    # v0.5.5: experiment plan template must have claim safety
+    ep2 = read_text(root, "templates/experiment-plan-template.md")
+    require_contains(ep2, "Claim Safety Check", "experiment-plan-template.md")
+    mp2 = read_text(root, "templates/multi-paper-comparison-template.md")
+    require_contains(mp2, "Report Quality", "multi-paper-comparison-template.md")
+    require_contains(mp2, "Paper Evidence Quality", "multi-paper-comparison-template.md")
+    require_contains(mp2, "Bibliographic verified", "multi-paper-comparison-template.md")
+    sa2 = read_text(root, "templates/strong-argument-template.md")
+    require_contains(sa2, "SOTA Classification", "strong-argument-template.md")
+    require_contains(sa2, "Report Quality", "strong-argument-template.md")
 
 
 def _validate_gbt_sections(gbt: str) -> None:
@@ -269,6 +318,9 @@ def validate_readme(root: Path) -> None:
             pass
         else:
             warn(f"README contains bare TODO: {line[:80]}")
+    # v0.5.5: must have platform positioning
+    if "Claude Skill vs Codex Adapter" not in text:
+        fail("README missing 'Claude Skill vs Codex Adapter' section")
 
 
 def validate_ci(root: Path) -> None:
@@ -276,6 +328,11 @@ def validate_ci(root: Path) -> None:
     require_contains(ci, "py_compile", "validate.yml")
     require_contains(ci, "pytest", "validate.yml")
     require_contains(ci, "package_skill.py", "validate.yml")
+    require_contains(ci, "package_codex_adapter.py", "validate.yml")
+    # v0.5.5: must explicitly validate both packages
+    require_contains(ci, "Claude Skill", "validate.yml")
+    require_contains(ci, "Codex Adapter", "validate.yml")
+    require_contains(ci, "--release", "validate.yml")
 
 
 def validate_gitignore(root: Path) -> None:
@@ -283,6 +340,81 @@ def validate_gitignore(root: Path) -> None:
     for entry in [".claude/settings.local.json", "__pycache__", ".pytest_cache", ".git/"]:
         if entry not in gi:
             fail(f".gitignore missing required entry: {entry}")
+
+
+def validate_codex_adapter(root: Path) -> None:
+    """Validate the Codex adapter structure if codex/ directory exists."""
+    codex_dir = root / "codex"
+    if not codex_dir.exists():
+        return  # Codex adapter is optional
+    # Root AGENTS.md must exist (Codex auto-entry point)
+    root_agents = root / "AGENTS.md"
+    if not root_agents.exists():
+        fail("Root AGENTS.md missing (Codex auto-entry point)")
+    if root_agents.stat().st_size == 0:
+        fail("Root AGENTS.md is empty")
+    root_agents_text = root_agents.read_text(encoding="utf-8")
+    if "codex/AGENTS.md" not in root_agents_text:
+        fail("Root AGENTS.md must reference codex/AGENTS.md")
+    # codex/AGENTS.md must exist
+    agents = codex_dir / "AGENTS.md"
+    if not agents.exists():
+        fail("codex/AGENTS.md missing")
+    if agents.stat().st_size == 0:
+        fail("codex/AGENTS.md is empty")
+    agents_text = agents.read_text(encoding="utf-8")
+    if "SKILL.md" not in agents_text:
+        fail("codex/AGENTS.md must reference SKILL.md")
+    # codex/README.md must exist
+    codex_readme = codex_dir / "README.md"
+    if not codex_readme.exists():
+        fail("codex/README.md missing")
+    if codex_readme.stat().st_size == 0:
+        fail("codex/README.md is empty")
+    # prompts/ must have 4 files
+    prompts_dir = codex_dir / "prompts"
+    if not prompts_dir.exists():
+        fail("codex/prompts/ directory missing")
+    prompt_files = list(prompts_dir.glob("*.md"))
+    if len(prompt_files) < 4:
+        fail(f"codex/prompts/ must have at least 4 files, found {len(prompt_files)}")
+    # validate-report-quality.md must exist
+    if not (prompts_dir / "validate-report-quality.md").exists():
+        fail("codex/prompts/validate-report-quality.md missing")
+    # checklists/ must have 4 files
+    checklists_dir = codex_dir / "checklists"
+    if not checklists_dir.exists():
+        fail("codex/checklists/ directory missing")
+    checklist_files = list(checklists_dir.glob("*.md"))
+    if len(checklist_files) < 4:
+        fail(f"codex/checklists/ must have at least 4 files, found {len(checklist_files)}")
+    # Each file must be non-empty
+    for p in prompt_files + checklist_files:
+        if p.stat().st_size == 0:
+            fail(f"codex adapter file is empty: {p.relative_to(root)}")
+    # v0.5.5: codex/AGENTS.md must have platform positioning
+    agents_text2 = agents.read_text(encoding="utf-8")
+    if "Platform Positioning" not in agents_text2:
+        fail("codex/AGENTS.md missing Platform Positioning section")
+    if "Codex Report Depth Requirement" not in agents_text2:
+        fail("codex/AGENTS.md missing Codex Report Depth Requirement")
+    # v0.5.5: codex/prompts/paper-analysis.md must have depth requirement
+    pa_prompt = read_text(root, "codex/prompts/paper-analysis.md")
+    if "Codex Report Depth Requirement" not in pa_prompt:
+        fail("codex/prompts/paper-analysis.md missing Codex Report Depth Requirement")
+    # v0.5.5: codex/prompts/innovation-mining.md must have depth requirement
+    inno_prompt = read_text(root, "codex/prompts/innovation-mining.md")
+    if "Innovation Point Depth Requirement" not in inno_prompt:
+        fail("codex/prompts/innovation-mining.md missing Innovation Point Depth Requirement")
+    # v0.5.5: codex/checklists/sota-claim-safety.md must have Chinese trigger words
+    sota_cl = read_text(root, "codex/checklists/sota-claim-safety.md")
+    for needle in ["首个", "首次", "完全兼容", "ONNX兼容性好"]:
+        if needle not in sota_cl:
+            fail(f"codex/checklists/sota-claim-safety.md missing Chinese trigger: {needle}")
+    # v0.5.5: codex/checklists/quality-audit.md must have Chinese banned words
+    qa_cl = read_text(root, "codex/checklists/quality-audit.md")
+    if "Chinese banned words" not in qa_cl:
+        fail("codex/checklists/quality-audit.md missing Chinese banned words check")
 
 
 # ---------------------------------------------------------------------------
@@ -337,6 +469,7 @@ def main() -> int:
     validate_readme(root)
     validate_ci(root)
     validate_gitignore(root)
+    validate_codex_adapter(root)
 
     if args.release:
         validate_release(root)

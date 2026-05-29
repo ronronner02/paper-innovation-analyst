@@ -27,7 +27,7 @@ def copy_repo_to(tmp_path: Path) -> Path:
     shutil.copytree(
         REPO_ROOT,
         dst,
-        ignore=shutil.ignore_patterns(".git", ".pytest_cache", "__pycache__", "dist", "outputs"),
+        ignore=shutil.ignore_patterns(".git", ".pytest_cache", "__pycache__", "dist", "outputs", ".claude"),
     )
     return dst
 
