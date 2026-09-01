@@ -122,9 +122,9 @@ paper-innovation-analyst/
 
 `references/` and `templates/` carry the two halves of the Skill's behavior: `references/` holds the rules and gates applied while reading a paper, `templates/` holds the report structures those rules produce. `SKILL.md` is the entry point that ties them together.
 
-## Codex Adapter (optional)
+## Claude Skill vs Codex Adapter
 
-A lightweight repository-level layer for the OpenAI Codex CLI, in `codex/`. It is **not** a standalone `.skill` package — it references the full Claude Skill.
+The repository ships two entry points. The Claude Skill (`SKILL.md`) is the primary instruction source; the Codex Adapter (`codex/`) is a lightweight repository-level layer for the OpenAI Codex CLI — **not** a standalone `.skill` package, it references the full Claude Skill.
 
 | | Claude Skill | Codex Adapter |
 | --- | --- | --- |
