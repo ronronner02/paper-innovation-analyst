@@ -124,7 +124,7 @@ paper-innovation-analyst/
 
 ## Claude Skill vs Codex Adapter
 
-The repository ships two entry points. The Claude Skill (`SKILL.md`) is the primary instruction source; the Codex Adapter (`codex/`) is a lightweight repository-level layer for the OpenAI Codex CLI — **not** a standalone `.skill` package, it references the full Claude Skill.
+The repository ships two entry points. The Claude Skill (`SKILL.md`) is the primary instruction source; the Codex Adapter (`codex/`) is a lightweight repository-level layer for the OpenAI Codex CLI. The adapter is **NOT a standalone** `.skill` installation package and is **not a replacement** for the Claude Skill — it references the full Skill rather than duplicating it.
 
 | | Claude Skill | Codex Adapter |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ Codex CLI reads `codex/AGENTS.md` as project instructions, which references `SKI
 ## Limitations
 
 - **Not certified across every Claude product or PDF type.** The repository has local validation and pytest coverage; it has not been formally certified beyond that.
-- **Complex documents may parse partially.** Scanned pages, formula images, charts, tables, multi-column reading order, and supplementary packages are best-effort. Anything unreadable is marked unavailable or uncertain — never guessed.
+- **Capability boundary — complex documents may parse partially.** Document asset extraction is best-effort: it **does not guarantee** stable parsing of every complex PDF, scanned page, mathematical formula image, figure, chart, table, multi-column reading order, or supplementary package. Anything unreadable is marked unavailable or uncertain — never guessed.
 - **Batch mode is for synthesis, not depth.** Batch outputs are research planning drafts and need human verification before use in proposals, theses, or publications.
 
 ## License
